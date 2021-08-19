@@ -9,8 +9,14 @@
     </head>
     <body>
         {{ content|safe }}
-       <script>            
+       <script>
+            function sleep(ms){
+                return new Promise(
+                    resolve => setTimeout(resolve, ms)
+                );
+            }            
             $(document).ready(function(){
+
                 $(".hide10").delay(1000).fadeIn(1000);
                 setTimeout(function() {
                     $(".hide10").delay(2000).fadeOut(1000);
