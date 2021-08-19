@@ -1,0 +1,50 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: #696969;
+    font-size: 12px;;
+}
+table{
+    table-layout: fixed;
+}
+.lesson{
+    border: 1px solid;
+    background: #FFEBCD;
+    color: #33210e;
+    text-align: center;
+}
+.group{
+    background-color: #98FB98;
+}
+.lesson img{
+    height: 30px;
+    padding: 2px;
+    border: 0px;
+}
+th {
+    border: 1px solid black;
+}
+tr {
+    border: 1px solid black;
+}
+.fio_th {
+    width: 10%;
+    min-width: 10%;
+    max-width: 10%;
+    text-align: center;
+}
+.hour_th {
+    width: 6%;
+    min-width: 6%;
+    max-width: 6%;
+}
+td {
+    border: 1px solid black;
+    height: 50px;
+    /*width: 1.5%;
+    padding: 3px;*/
+    min-width: 1.5%;
+    max-width: 1.5%;
+}
+.hide10, .hide20, .hide30, .hide40, .hide50, .hide60, .hide70, .hide80, .hide90, .hide100, .hide110, .hide120, .hide130 {
+    /*display: none;*/
+}

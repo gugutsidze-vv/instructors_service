@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Расписание инструкторов</title>
+        <link rel="stylesheet" href="{% static "css/base.css"%}"/>
+        <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    </head>
+    <body>
+        {{ content|safe }}
+       <script>            
+            $(document).ready(function(){
+                $(".hide10").delay(1000).fadeIn(1000);
+                setTimeout(function() {
+                    $(".hide10").delay(2000).fadeOut(1000);
+                    setTimeout(function() {
+                        $(".hide20").delay(2000).fadeIn(1000)
+                    }, 2500);
+                }, 2500);
+            })
+        </script>
+    </body>
+</html>
