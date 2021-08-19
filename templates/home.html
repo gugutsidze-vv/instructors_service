@@ -14,16 +14,15 @@
                 return new Promise(
                     resolve => setTimeout(resolve, ms)
                 );
+            }
+            async function carusel(){
+                await sleep(10000);
+                $(".hide0").fadeOut(1000);
+                await sleep(500);
+                $(".hide1").fadeIn(1000);
             }            
             $(document).ready(function(){
-
-                $(".hide10").delay(1000).fadeIn(1000);
-                setTimeout(function() {
-                    $(".hide10").delay(2000).fadeOut(1000);
-                    setTimeout(function() {
-                        $(".hide20").delay(2000).fadeIn(1000)
-                    }, 2500);
-                }, 2500);
+                carusel()               
             })
         </script>
     </body>

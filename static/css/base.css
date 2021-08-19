@@ -45,6 +45,6 @@ td {
     min-width: 1.5%;
     max-width: 1.5%;
 }
-.hide10, .hide20, .hide30, .hide40, .hide50, .hide60, .hide70, .hide80, .hide90, .hide100, .hide110, .hide120, .hide130 {
-    /*display: none;*/
+.hide1, .hide2, .hide3, .hide4, .hide5, .hide6, .hide7, .hide8, .hide9, .hide10, .hide11, .hide12 {
+    display: none;
 }
