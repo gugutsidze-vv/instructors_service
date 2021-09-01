@@ -18,7 +18,9 @@ def index(request):
             encoding=encoding
         )
         cur = connection.cursor()
-        cur.execute("SELECT TO_CHAR(lesson_time_in,'HH24'), coach_name, lesson_skill_type, lesson_type, TO_CHAR(lesson_time_in,'HH24:MI'), TO_CHAR(lesson_time_out,'HH24:MI'), lesson_count_clients FROM view_rosa_coach WHERE (lesson_status=3 OR lesson_status=1 AND lesson_group_id IS NOT NULL) AND lesson_date = TO_DATE('03.01.2021','DD.MM.YYYY HH24:MI:SS') AND TO_CHAR(lesson_time_in,'HH24') BETWEEN TO_CHAR(trunc(SYSDATE+1)+9/24,'HH24') AND TO_CHAR(trunc(SYSDATE)+86399/86400,'HH24') AND lesson_appl_id IN (5) ORDER BY TO_CHAR(lesson_time_in,'HH24'), coach_name, TO_CHAR(lesson_time_in,'HH24:MI')")
+        date_today=datetime.datetime.today()
+        sql_date=date_today.strftime("%d.%m.%Y")
+        cur.execute("SELECT TO_CHAR(lesson_time_in,'HH24'), coach_name, lesson_skill_type, lesson_type, TO_CHAR(lesson_time_in,'HH24:MI'), TO_CHAR(lesson_time_out,'HH24:MI'), lesson_count_clients, lesson_location_id FROM view_rosa_coach WHERE (lesson_status=3 OR lesson_status=1 AND lesson_group_id IS NOT NULL) AND lesson_date = TO_DATE('"+str(sql_date)+"','DD.MM.YYYY HH24:MI:SS') AND TO_CHAR(lesson_time_in,'HH24') BETWEEN TO_CHAR(trunc(SYSDATE+1)+9/24,'HH24') AND TO_CHAR(trunc(SYSDATE)+86399/86400,'HH24') AND lesson_appl_id IN (5) ORDER BY TO_CHAR(lesson_time_in,'HH24'), coach_name, TO_CHAR(lesson_time_in,'HH24:MI')")
         res = cur.fetchall()
         instructors_shedule_data_in = ''
         # Готовим SQL-запрос для импорта в MSSQL
@@ -28,17 +30,16 @@ def index(request):
         cursor = cnxn.cursor()
         # Проверяем есть ли таблица в которую мы будем импортировать данные, если ее нет, то создаем ее
         cursor.execute(
-            "if NOT EXISTS (SELECT * FROM sysobjects WHERE id=OBJECT_ID(N'[dbo].[instructors_shedule]') AND OBJECTPROPERTY(id, N'isUserTable')=1) CREATE TABLE [dbo].[instructors_shedule](lesson_hour int NOT NULL, coach_name varchar(255), lesson_skill_type varchar(255), lesson_type varchar(255), lesson_time_in varchar(255), lesson_time_out varchar(255), lesson_count_clients int)")
+            "if NOT EXISTS (SELECT * FROM sysobjects WHERE id=OBJECT_ID(N'[dbo].[instructors_shedule]') AND OBJECTPROPERTY(id, N'isUserTable')=1) CREATE TABLE [dbo].[instructors_shedule](lesson_hour int NOT NULL, coach_name varchar(255), lesson_skill_type varchar(255), lesson_type varchar(255), lesson_time_in varchar(255), lesson_time_out varchar(255), lesson_count_clients int, lesson_placement varchar(255))")
         cnxn.commit()
         # Очищаем таблицу от старых данных
         cursor.execute(
             "IF EXISTS (SELECT * FROM sysobjects WHERE id=OBJECT_ID(N'[dbo].[instructors_shedule]') AND OBJECTPROPERTY(id, N'isUserTable')=1) TRUNCATE TABLE [dbo].[instructors_shedule]")
         cnxn.commit()
         # Готовим строку для импорта
-        import_string = "INSERT INTO instructors_shedule (lesson_hour, coach_name, lesson_skill_type, lesson_type, lesson_time_in, lesson_time_out, lesson_count_clients) Values"
+        import_string = "INSERT INTO instructors_shedule (lesson_hour, coach_name, lesson_skill_type, lesson_type, lesson_time_in, lesson_time_out, lesson_count_clients, lesson_placement) Values"
         for row in res:
-            instructors_shedule_data_in += "("+str(row[0])+", '"+str(row[1])+"', '"+str(
-                row[2])+"', '"+str(row[3])+"', '"+str(row[4])+"', '"+str(row[5])+"', "+str(row[6])+"),"
+            instructors_shedule_data_in += "("+str(row[0])+", '"+str(row[1])+"', '"+str(row[2])+"', '"+str(row[3])+"', '"+str(row[4])+"', '"+str(row[5])+"', "+str(row[6])+", '"+str(row[7])+"'),"
         # Обрезаем последнюю запятую
         l = len(instructors_shedule_data_in)
         instructors_shedule_data_in = instructors_shedule_data_in[:l-1]
@@ -81,7 +82,7 @@ def index(request):
                     str(instructor_name.coach_name)+'</td>'
                 # Для построения строки с занятиями получаем все занятия инструктора и ищем первую временную точку, так же проверяем минуты занятий.
                 cursor.execute(
-                    "SELECT TOP 1 lesson_skill_type, lesson_type, lesson_time_in, lesson_time_out, lesson_count_clients FROM instructors_shedule where coach_name='"+str(instructor_name.coach_name)+"'")
+                    "SELECT TOP 1 lesson_skill_type, lesson_type, lesson_time_in, lesson_time_out, lesson_count_clients, lesson_placement FROM instructors_shedule where coach_name='"+str(instructor_name.coach_name)+"'")
                 instructor_timeline = cursor.fetchall()
                 cell_counter = 0
                 for lesson in instructor_timeline:
@@ -116,12 +117,16 @@ def index(request):
                     if str(lesson.lesson_skill_type)=='Лыжи':
                         output+='<img src="/static/img/ski.png"/>'
                     elif str(lesson.lesson_skill_type)=='Сноуборд':
-                        output+='<img src="/static/img/board.png"/>'                        
+                        output+='<img src="/static/img/board.png"/>'
+                    if str(lesson.lesson_placement)=='1':
+                        output+='<img src="/static/img/hotel.png"/>'
+                    elif str(lesson.lesson_placement)=='2':
+                        output+='<img src="/static/img/1600.png"/>'
                     #output+=str(lesson.lesson_skill_type)
                     #output+='</br>'+str(lesson.lesson_type)+'</br>'
                     output+='</br>'+str(lesson.lesson_time_in)+'-'+str(lesson.lesson_time_out)+' Кол-во: '+str(lesson.lesson_count_clients)+'</td>'
                 # Добиваем остальные ячейки занятий
-                cursor.execute("SELECT lesson_skill_type, lesson_type, lesson_time_in, lesson_time_out, lesson_count_clients FROM instructors_shedule where coach_name='" +
+                cursor.execute("SELECT lesson_skill_type, lesson_type, lesson_time_in, lesson_time_out, lesson_count_clients, lesson_placement FROM instructors_shedule where coach_name='" +
                                str(instructor_name.coach_name)+"' order by lesson_time_in OFFSET 1 ROW")
                 other_lessons = cursor.fetchall()
                 for other_lesson in other_lessons:
@@ -155,6 +160,10 @@ def index(request):
                         output+='<img src="/static/img/ski.png"/>'
                     elif str(other_lesson.lesson_skill_type)=='Сноуборд':
                         output+='<img src="/static/img/board.png"/>'
+                    if str(other_lesson.lesson_placement)=='1':
+                        output+='<img src="/static/img/hotel.png"/>'
+                    elif str(other_lesson.lesson_placement)=='2':
+                        output+='<img src="/static/img/1600.png"/>'
                     output+='</br>'+str(other_lesson.lesson_time_in)+'-'+str(other_lesson.lesson_time_out)+' Кол-во: '+str(other_lesson.lesson_count_clients)+'</td>'
                 # Добиваем оставшиеся ячейки
                 last_cells = 60-cell_counter
@@ -167,7 +176,31 @@ def index(request):
                 
             output += '</table>'
             #Готовим скрипт на отображение/скрытие строк
-            output+=''
+            output_script='<script>'
+            output_script+='function sleep(ms){'
+            output_script+='return new Promise('
+            output_script+='resolve => setTimeout(resolve, ms)'
+            output_script+=');'
+            output_script+='}'
+            output_script+='async function carusel(){'            
+            if row_counter==0:
+                output_script+='await sleep(10000);'
+            else:
+                output_script+='await sleep(10000);'
+                for circle in range(row_counter):
+                    output_script+='await sleep(10000);'
+                    output_script+='$(".hide'+str(circle)+'").fadeOut(1000);'
+                    output_script+='await sleep(500);'
+                    next_circle=circle+1
+                    output_script+='$(".hide'+str(next_circle)+'").fadeIn(1000);'
+                output_script+='await sleep(10000);'
+            output_script+='window.location.reload(true);'                        
+            output_script+='            }'
+            output_script+='$(document).ready(function(){'
+            output_script+='carusel()'
+            output_script+='})'
+            output_script+='</script>'
+            output+=output_script
             # tratata
         # elif table_config == 2:
             # tratata
