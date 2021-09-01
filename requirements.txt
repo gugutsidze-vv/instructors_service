@@ -1,0 +1,7 @@
+asgiref==3.4.1
+cx-Oracle @ file:///C:/Distr/cx_Oracle-8.2.1-cp39-cp39-win_amd64.whl
+Django==3.2.6
+pyodbc @ file:///C:/Distr/pyodbc-4.0.31-cp39-cp39-win_amd64.whl
+pytz==2021.1
+sqlparse==0.4.1
+wfastcgi==3.0.0
