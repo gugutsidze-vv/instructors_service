@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from imports import views
+handler500=e_handler500
 
 
 urlpatterns = [
