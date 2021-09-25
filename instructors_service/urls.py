@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from imports import views
-handler500=e_handler500
-
+handler500 = views.error500
+handler400=views.error404
 
 urlpatterns = [
     path('admin/', admin.site.urls),

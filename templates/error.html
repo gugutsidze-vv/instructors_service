@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Расписание инструкторов - Ошибка</title>
+    <link rel="stylesheet" href="{% static " css/base.css"%}" />
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+</head>
+
+<body>
+    <h1>Ой! Что-то поломалось! Фиксики уже выехали на вызов.</h1>
+    <script>
+        function sleep(ms) {
+            return new Promise(
+                resolve => setTimeout(resolve, ms)
+            );
+        }
+        async function carusel() {
+            await sleep(30000);
+            window.location.reload(true);
+        }
+        $(document).ready(function () {
+            carusel()
+        })
+    </script>
+
+
+
+</body>
+
+</html>
