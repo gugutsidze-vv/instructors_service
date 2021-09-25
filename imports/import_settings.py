@@ -2,8 +2,8 @@
 from django.urls import conf
 
 
-username = 'ADMIN7'
-password = 'Psiho01go'
+username = 'PPSREPORT'
+password = 'A89AFC78'
 dsn = 'ora.rskh.local/PPS'
 port = 1512
 encoding = 'UTF-8'
