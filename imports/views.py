@@ -205,18 +205,18 @@ def index(request):
                 output_script += '}'
                 output_script += 'async function carusel(){'
                 if row_counter == 0:
-                    output_script += 'await sleep(300000);'
+                    output_script += 'await sleep(10000);'
                 else:
-                    output_script += 'await sleep(300000);'
+                    output_script += 'await sleep(10000);'
                     for circle in range(row_counter):
-                        output_script += 'await sleep(300000);'
+                        output_script += 'await sleep(10000);'
                         output_script += '$(".hide' + \
                             str(circle)+'").fadeOut(1000);'
-                        output_script += 'await sleep(500);'
+                        output_script += 'await sleep(1000);'
                         next_circle = circle+1
                         output_script += '$(".hide' + \
                             str(next_circle)+'").fadeIn(1000);'
-                    output_script += 'await sleep(30000);'
+                    output_script += 'await sleep(10000);'
                 output_script += 'window.location.reload(true);'
                 output_script += '            }'
                 output_script += '$(document).ready(function(){'
